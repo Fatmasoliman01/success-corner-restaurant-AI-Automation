@@ -1,0 +1,303 @@
+{
+  "name": "SC_Stock_workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "90b9eb7a-5f73-4429-bfd8-7cca5526db75",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        1824,
+        176
+      ],
+      "webhookId": "1f5be75c-fc76-4b0e-aeef-88f304bf5a41",
+      "credentials": {
+        "telegramApi": {
+          "id": "Uj9GTR8QWu561zvS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\n// Get chat message\nconst message = $input.first().json.chatInput;\n\n// Split message by space\nconst parts = message.trim().split(\" \");\n\n// Extract values\nconst item = parts[0];\nconst quantity = parseInt(parts[1]) || 1;\n\n// Return structured data\nreturn [\n  {\n    json: {\n      originalMessage: message,\n      item: item,\n      quantity: quantity\n    }\n  }\n];"
+      },
+      "id": "e984b3fa-f94b-420c-8b16-ee4736eb3e06",
+      "name": "Parse Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dz9YH8dxYdgB_X-1l9xpo2HOzK083jwfSAJ46vJA3i0",
+          "mode": "list",
+          "cachedResultName": "SC Stock",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dz9YH8dxYdgB_X-1l9xpo2HOzK083jwfSAJ46vJA3i0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dz9YH8dxYdgB_X-1l9xpo2HOzK083jwfSAJ46vJA3i0/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "item",
+              "lookupValue": "={{ $json.item }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "06cbbb35-09c1-45e6-a577-2a5d9776d422",
+      "name": "Get Item Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        496,
+        -96
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UhgT8rvTWj5IJ8F6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Quantity from Google Sheet\nconst sheetQuantity = $input.first().json.quantity;\n\n// Quantity from Parse Message node\nconst chatQuantity = $items(\"Parse Message\")[0].json.quantity;\n\n// Calculate new quantity\nconst newQuantity = sheetQuantity + chatQuantity;\n\nreturn [\n  {\n    json: {\n      item: $input.first().json.item,\n      old_quantity: sheetQuantity,\n      added_quantity: chatQuantity,\n      new_quantity: newQuantity\n    }\n  }\n];"
+      },
+      "id": "687579eb-797f-43c7-b1a1-d6a06e3a68c1",
+      "name": "Calculate New Quantity",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1dz9YH8dxYdgB_X-1l9xpo2HOzK083jwfSAJ46vJA3i0",
+          "mode": "list",
+          "cachedResultName": "SC Stock",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dz9YH8dxYdgB_X-1l9xpo2HOzK083jwfSAJ46vJA3i0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dz9YH8dxYdgB_X-1l9xpo2HOzK083jwfSAJ46vJA3i0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "item": "={{ $json.item }}",
+            "quantity": "={{ $json.new_quantity }}"
+          },
+          "matchingColumns": [
+            "item"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "item",
+              "displayName": "item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "quantity",
+              "displayName": "quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Unit",
+              "displayName": "Unit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "ac8aa85b-c731-472c-9bac-040abd9f1752",
+      "name": "Update Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        976,
+        -112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UhgT8rvTWj5IJ8F6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=1208086959",
+        "text": "={{\"Stock updated. The new total for \" + $('Get Item Row').item.json.item + \" is \" + $('Get Item Row').item.json.quantity}}",
+        "additionalFields": {}
+      },
+      "id": "271898ef-9602-456b-9a7c-1b41f1cdd6a2",
+      "name": "Send Confirmation",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        32
+      ],
+      "webhookId": "c282e43d-328d-48a0-a9b6-f7d4dcc4a9db",
+      "credentials": {
+        "telegramApi": {
+          "id": "Uj9GTR8QWu561zvS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "08c7a5d4-0158-489f-bf8a-dc01de05c1fe",
+      "name": "When chat message received",
+      "webhookId": "e02964ea-69d1-4661-baae-39520e28c040"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        []
+      ]
+    },
+    "Parse Message": {
+      "main": [
+        [
+          {
+            "node": "Get Item Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Item Row": {
+      "main": [
+        [
+          {
+            "node": "Calculate New Quantity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate New Quantity": {
+      "main": [
+        [
+          {
+            "node": "Update Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Row": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Parse Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "36462e98-dc0a-47dd-b865-fde225670bcf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7b9bb33d7ec857fc9405512663a9de44d4d2ef68e425042f165ab291069c884d"
+  },
+  "id": "qB9pqdFPaWfCvPAz",
+  "tags": []
+}

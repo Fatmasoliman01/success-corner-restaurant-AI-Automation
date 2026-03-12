@@ -1,0 +1,336 @@
+{
+  "name": "SC Restaurant Order",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "c86994b1-ef26-46d6-8b94-657dab9ba6f6",
+        "formTitle": "New Order",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Item",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "cheese"
+                  },
+                  {
+                    "option": "burger"
+                  },
+                  {
+                    "option": "chiken"
+                  },
+                  {
+                    "option": "fish"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "name"
+            },
+            {
+              "fieldLabel": "Moile",
+              "fieldType": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ecb53718-05c7-46c3-a5d0-e1e7d1072fdf",
+      "name": "Order Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "c86994b1-ef26-46d6-8b94-657dab9ba6f6"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1vvUJ-Hk4QgM32QMFYvw4jx3KzDIHPlS4jTM4OHrw32A",
+          "mode": "list",
+          "cachedResultName": "order",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vvUJ-Hk4QgM32QMFYvw4jx3KzDIHPlS4jTM4OHrw32A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vvUJ-Hk4QgM32QMFYvw4jx3KzDIHPlS4jTM4OHrw32A/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "detectAutomatically"
+            }
+          },
+          "returnAllMatches": "returnAllMatches"
+        }
+      },
+      "id": "f0089bb9-c930-4cde-8c62-75abb5538e7f",
+      "name": "Get Last Order",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        176,
+        -16
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UhgT8rvTWj5IJ8F6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1vvUJ-Hk4QgM32QMFYvw4jx3KzDIHPlS4jTM4OHrw32A",
+          "mode": "list",
+          "cachedResultName": "order",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vvUJ-Hk4QgM32QMFYvw4jx3KzDIHPlS4jTM4OHrw32A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vvUJ-Hk4QgM32QMFYvw4jx3KzDIHPlS4jTM4OHrw32A/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.nextid }}",
+            "date": "={{ $('Order Form').item.json.submittedAt }}",
+            "customer": "={{ $('Order Form').item.json.name }}",
+            "order": "={{ $('Order Form').item.json.Item }}",
+            "moile": "={{ $('Order Form').item.json.Moile }}",
+            "status": "inprogress"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "order",
+              "displayName": "order",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "customer",
+              "displayName": "customer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "moile",
+              "displayName": "moile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nextid",
+              "displayName": "nextid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b24f5f10-68e1-4016-813c-440f5b49db50",
+      "name": "Append Order",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        752,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UhgT8rvTWj5IJ8F6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1208086959",
+        "text": "={{ \"New Order #\" + $('Code in JavaScript').item.json.id + \": \" + $('Order Form').item.json.Item + \" for \" + $('Order Form').item.json[\"Customer Name\"] }}",
+        "additionalFields": {}
+      },
+      "id": "ddf158bc-dea0-4e77-8c97-97f79f3cef99",
+      "name": "Telegram Notify",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        0
+      ],
+      "webhookId": "44c77039-425c-41a5-a541-d4bab0dd09d3",
+      "credentials": {
+        "telegramApi": {
+          "id": "Uj9GTR8QWu561zvS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "customer",
+        "operation": "create",
+        "name": "={{ $json.customer }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.stripe",
+      "typeVersion": 1,
+      "position": [
+        576,
+        0
+      ],
+      "id": "22a0d449-3dbd-4fab-aace-cf504d474c90",
+      "name": "Create a customer",
+      "credentials": {
+        "stripeApi": {
+          "id": "VVl6OrrnSIyP1B37",
+          "name": "Stripe account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst items = $input.all();\n\n// sort by id descending\nitems.sort((a, b) => b.json.id - a.json.id);\n\n// return only the latest order\nreturn [items[0]];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        0
+      ],
+      "id": "51c10739-4a2c-408b-b217-aa5215f939e2",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Order Form": {
+      "main": [
+        [
+          {
+            "node": "Get Last Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Last Order": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Order": {
+      "main": [
+        [
+          {
+            "node": "Telegram Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a customer": {
+      "main": [
+        [
+          {
+            "node": "Append Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4684b6b2-d6ab-4b68-aa09-e8d339df104d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7b9bb33d7ec857fc9405512663a9de44d4d2ef68e425042f165ab291069c884d"
+  },
+  "id": "uBC0obFleRQHr39r",
+  "tags": []
+}
